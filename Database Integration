@@ -1,0 +1,31 @@
+# Step 2: Database Integration (SQLite)
+from flask_sqlalchemy import SQLAlchemy
+
+# Configure SQLite database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///videos.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # Disable modification tracking for performance
+db = SQLAlchemy(app)
+
+# Define a Video model
+class Video(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    s3_key = db.Column(db.String(200), unique=True, nullable=False) # Key for S3 object
+    upload_date = db.Column(db.DateTime, default=db.func.current_timestamp())
+    # Add more fields as needed, e.g., duration, thumbnail_s3_key, status, etc.
+
+    def __repr__(self):
+        return f"<Video {self.title}>"
+
+# Function to create database tables
+def init_db():
+    with app.app_context():
+        db.create_all()
+        print("Database tables created or already exist.")
+
+# You can call init_db() to create the database tables
+init_db()
+
+print("SQLite database configured and Video model defined. Database tables have been initialized.")
+print("Next, we will implement video upload functionality and integrate with AWS S3.")
